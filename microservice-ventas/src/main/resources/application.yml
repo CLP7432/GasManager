@@ -1,0 +1,154 @@
+server:
+  port: 8091  # Puerto diferente al de users (8090)
+
+spring:
+  application:
+    name: msvc-ventas  # Nombre del servicio para Eureka
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/gasmanager_ventas  # BD específica para ventas
+    username: root
+    password:  # Cambia esto
+
+  jpa:
+    hibernate:
+      ddl-auto: create  # O 'validate' en producción
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+    show-sql: true
+
+  # Configuración para Feign (comunicación con otros microservicios)
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connect-timeout: 5000
+            read-timeout: 10000
+            logger-level: basic
+
+  # Para enviar notificaciones/alertas
+  mail:
+    host: localhost
+    port: 1025
+    protocol: smtp
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+  # Logging específico para ventas
+  logging:
+    level:
+      com.gasmanager.ventas: DEBUG
+      org.springframework.web: INFO
+      org.springframework.security: INFO
+      org.hibernate.SQL: DEBUG
+      feign: DEBUG  # Para ver llamadas a otros microservicios
+    file:
+      name: logs/gasmanager-ventas.log
+    pattern:
+      console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+      file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+  cache:
+    type: simple
+
+# Configuración para circuit breaker (Resilience4j)
+resilience4j:
+  circuitbreaker:
+    instances:
+      inventarioService:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 5s
+        permitted-number-of-calls-in-half-open-state: 3
+      creditosService:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 5s
+        permitted-number-of-calls-in-half-open-state: 3
+
+# Configuración de Eureka
+eureka:
+  instance:
+    hostname: localhost
+    instance-id: ${spring.application.name}:${server.port}
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 30
+    lease-expiration-duration-in-seconds: 90
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    enabled: true
+    fetch-registry: true
+    register-with-eureka: true
+    registry-fetch-interval-seconds: 30
+
+# Para Actuator endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  health:
+    mail:
+      enabled: false
+
+# Configuración específica del módulo de ventas
+ventas:
+  # Configuración de turnos
+  turnos:
+    duracion-horas: 8
+    tolerancia-minutos: 15
+
+  # Configuración de cortes
+  cortes:
+    generar-automatico: true
+    hora-cierre: "00:00,08:00,16:00"
+    notificar-supervisor: true
+
+  # Configuración de métodos de pago
+  metodos-pago:
+    permitidos: ["EFECTIVO", "TARJETA", "TRANSFERENCIA", "CREDITO"]
+    credito-requiere-validacion: true
+
+  # Integración con otros microservicios
+  integracion:
+    inventario-service: http://msvc-inventarios  # Nombre del servicio en Eureka
+    creditos-service: http://msvc-creditos
+    facturacion-service: http://msvc-facturacion
+    lealtad-service: http://msvc-lealtad
+    timeout-ms: 5000
+    retry-attempts: 3
+
+# Para auditoría de ventas
+auditoria:
+  ventas:
+    retencion-dias: 365  # Guardar ventas por 1 año
+    registrar-ip-cliente: true
+    registrar-dispositivo: true
+
+# Validaciones
+validacion:
+  venta:
+    cantidad-minima: 0.01  # Litros
+    precio-minimo: 0.01
+    surtidor-minimo: 1
+    surtidor-maximo: 20

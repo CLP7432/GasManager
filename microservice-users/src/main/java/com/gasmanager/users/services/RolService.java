@@ -56,4 +56,10 @@ public class RolService {
         rol.getPermisos().remove(permisoDB);
         return rolRepository.save(rol);
     }
+    // Listar solo roles activos (para formularios)
+    public List<Rol> listarRolesActivos() {
+        return rolRepository.findAll().stream()
+                .filter(Rol::isActivo)
+                .toList();
+    }
 }

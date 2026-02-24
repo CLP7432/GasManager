@@ -30,9 +30,15 @@ public class SesionUsuarioService {
         });
     }
     public boolean validarToken(String token) {
-        return sesionRepository.findByToken(token)
-                .map(SesionUsuario::isActivo)
+        System.out.println("=== SESION USUARIO SERVICE - Validando token: " + token);
+        boolean activo = sesionRepository.findByToken(token)
+                .map(sesion -> {
+                    System.out.println("=== Sesión encontrada: " + sesion.isActivo());
+                    return sesion.isActivo();
+                })
                 .orElse(false);
+        System.out.println("=== Resultado validación: " + activo);
+        return activo;
     }
 
 

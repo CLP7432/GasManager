@@ -11,21 +11,35 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
+@Table(name = "rol")
 @Getter
 @Setter
 public class Rol {
 
+    public Rol() {
+    }
+
+    public Rol(String nombreRol, String descripcion) {
+        this.nombreRol = nombreRol;
+        this.descripcion = descripcion;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_rol")
     private Integer idRol;
 
     @NotBlank
-    @Column(unique = true, nullable = false)
+    @Column(name = "nombre_rol",nullable = false, unique = true)
     private String nombreRol;
 
+    @Column(name = "descripcion")
     private String descripcion;
 
+    @Column(name = "fecha_creacion")
     private LocalDate fechaCreacion = LocalDate.now();
+
+    @Column(name = "activo")
     private boolean activo = true;
 
     @ManyToMany(fetch = FetchType.EAGER)

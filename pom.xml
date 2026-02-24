@@ -15,7 +15,8 @@
     <groupId>com.gasmanager</groupId>
     <artifactId>GasManager</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
+
+    <packaging>pom</packaging> <!--PONER IMPORTANTE-->
 
     <name>GasManager</name>
     <description>Proyecto GasManager con microservicios</description>
@@ -26,6 +27,8 @@
         <module>microservice-euka</module>
         <module>microservice-config</module>
         <module>microservice-users</module>
+        <module>microservice-ventas</module>
+        <module>microservice-ventas</module>
     </modules>
 
     <properties>

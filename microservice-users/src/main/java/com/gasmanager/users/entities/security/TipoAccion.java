@@ -5,5 +5,6 @@ public enum TipoAccion {
     CREAR,
     LEER,
     ACTUALIZAR,
-    VALIDAR
+    VALIDAR,
+    ELIMINAR
 }

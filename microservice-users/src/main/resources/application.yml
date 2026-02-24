@@ -4,8 +4,6 @@ server:
 spring:
   application:
     name: msvc-users
-  config:
-    import: optional:configserver:http://localhost:8888
 
   security:
     user:
@@ -23,19 +21,83 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+    show-sql: true
 
+  mail:
+    host: localhost
+    port: 1025
+    protocol: smtp
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
 
+  logging:
+    level:
+      com.gasmanager.users: DEBUG
+      org.springframework.web: DEBUG
+      org.springframework.security: DEBUG
+      org.hibernate.SQL: DEBUG
+      org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+      org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: TRACE
+    file:
+      name: logs/gasmanager-users.log
+    pattern:
+      console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+      file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+  cache:
+    type: simple
+
+jwt:
+  secret: GasManagerSecretKey2025ParaJWTTokenSeguroDeAutenticacionMuyLargoYComplejo
+  expiration: 86400000
+  issuer: gasmanager-system
+
+audit:
+  retention-days: 90
+  enabled: true
+
+password-reset:
+  token-expiration-hours: 24
+  max-attempts-per-day: 5
+  min-password-length: 6
 
 eureka:
   instance:
     hostname: localhost
+    instance-id: ${spring.application.name}:${server.port}
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 30
+    lease-expiration-duration-in-seconds: 90
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://localhost:8761/eureka/
+    enabled: true
+    fetch-registry: true
+    register-with-eureka: true
+    registry-fetch-interval-seconds: 30
 
-
-
-
-
-
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+  health:
+    mail:
+      enabled: false

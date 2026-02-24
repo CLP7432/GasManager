@@ -10,38 +10,61 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
+
 @Getter
 @Setter
+@Table(name = "usuario")
 public class Usuario {
+
+    public Usuario() {}
+
+    public Usuario(String nombre, String correo, String password, Rol rol) {
+        this.nombre = nombre;
+        this.correo = correo;
+        this.password = password;
+        this.rol = rol;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_usuario")
     private Integer idUsuario;
 
     @NotBlank
+    @Column(name = "nombre", nullable = false)
     private String nombre;
 
     @NotBlank
-    @Column(unique = true)
+    @Column(name = "correo", nullable = false,  unique = true)
     private String correo;
 
     @NotBlank
+    @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion = LocalDateTime.now();
+
+    @Column(name = "ultimo_acceso")
     private LocalDateTime ultimoAcceso;
 
+    @Column(name = "activo")
     private boolean activo = true;
+
+    @Column(name = "intentos_fallidos")
     private int intentosFallidos = 0;
+
+    @Column(name = "bloqueado")
     private boolean bloqueado = false;
 
     @Enumerated(EnumType.STRING)
-    private EstadoUsuario estado;
+    @Column(name = "estado")
+    private EstadoUsuario estado = EstadoUsuario.ACTIVO;
 
     @ManyToOne
-    @Enumerated(EnumType.STRING)
+    @JoinColumn(name = "rol_id", referencedColumnName = "id_rol")
     private Rol rol;
+
 
 
 

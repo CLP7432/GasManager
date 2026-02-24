@@ -45,5 +45,9 @@ public class RolController {
         Rol rolActualizado = rolService.removerPermiso(idRol, permiso);
         return ResponseEntity.ok(rolActualizado);
     }
+    @GetMapping("/activos")
+    public ResponseEntity<List<Rol>> listarRolesActivos() {
+        return ResponseEntity.ok(rolService.listarRolesActivos());
+    }
 
 }
