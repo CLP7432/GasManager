@@ -14,15 +14,22 @@ export default function LoginPage(){
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log("🔵 [1] handleSubmit ejecutado");
+        console.log("🔵 [2] correo:", correo, "password:", password ? "****" : "vacío");
+
         setError(null);
         setLoading(true);
 
         try {
+            console.log("🔵 [3] Intentando llamar a api.post...");
+            console.log("🔵 [4] URL completa:", api.defaults.baseURL + "/usuarios/login");
+
             const response = await api.post("/usuarios/login", {
                 correo, password
             });
 
-            console.log("Respuesta del login:", response.data);
+            console.log("🟢 [5] Respuesta recibida del backend:", response.data);
+            console.log("🟢 [6] Status:", response.status);
 
             const { token, rol, idUsuario, correo: userEmail } = response.data;
 
@@ -41,11 +48,18 @@ export default function LoginPage(){
                 token, rol, idUsuario, correo: userEmail
             });
 
+            console.log("🟢 [7] Token guardado, redirigiendo a dashboard...");
             navigate("/dashboard");
 
         } catch (err) {
-            console.error("Error completo: ", err);
-            console.error("Error response: ", err.response);
+            console.log("🔴 [8] ERROR capturado:");
+            console.error("🔴 Error completo: ", err);
+            console.error("🔴 Error response: ", err.response);
+            console.error("🔴 Error message:", err.message);
+
+            if (err.code === "ERR_NETWORK") {
+                console.log("🔴 ERROR DE RED - El backend no responde");
+            }
 
             setError(
                 err.response?.data?.message ||
@@ -53,6 +67,7 @@ export default function LoginPage(){
                 "Error de conexion con el servidor"
             );
         } finally {
+            console.log("🔵 [9] finally ejecutado");
             setLoading(false);
         }
     };

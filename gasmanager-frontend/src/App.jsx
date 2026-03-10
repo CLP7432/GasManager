@@ -10,7 +10,11 @@ import VentaList from "./components/ventas/VentaList.jsx";
 import VentaForm from "./components/ventas/VentaForm.jsx";
 import VentaDetail from "./components/ventas/VentaDetail.jsx";
 
-// Componente para rutas protegidas
+// ========== IMPORTACIONES PARA PERMISOS Y ROLES ==========
+import PermisoList from "./components/permisos/PermisoList.jsx";
+import RolesList from "./components/roles/RolesList.jsx";
+
+// Componente para rutas protegidas (solo autenticado)
 function ProtectedRoute({children}) {
     const {isAuthenticated} = useAuth();
 
@@ -20,20 +24,21 @@ function ProtectedRoute({children}) {
     return children;
 }
 
-// Componente para rutas solo ADMIN
+// Componente para rutas solo ADMIN (acepta ROLE_ADMIN y ADMINISTRADOR)
 function AdminRoute({children}) {
     const {auth} = useAuth();
+    const rolesPermitidos = ['ROLE_ADMIN', 'ADMINISTRADOR'];
 
-    if (!auth || auth.rol !== 'ADMINISTRADOR') {
+    if (!auth || !rolesPermitidos.includes(auth.rol)) {
         return <Navigate to="/dashboard" replace/>
     }
     return children;
 }
 
-// Componente para rutas de VENTAS (roles permitidos: ADMIN, DESPACHADOR, SUPERVISOR)
+// Componente para rutas de VENTAS (roles permitidos: ADMIN, ROLE_ADMIN, DESPACHADOR, SUPERVISOR)
 function VentasRoute({children}) {
     const {auth} = useAuth();
-    const rolesPermitidos = ['ADMINISTRADOR', 'DESPACHADOR', 'SUPERVISOR'];
+    const rolesPermitidos = ['ROLE_ADMIN', 'ADMINISTRADOR', 'DESPACHADOR', 'SUPERVISOR'];
 
     if (!auth || !rolesPermitidos.includes(auth.rol)) {
         return <Navigate to="/dashboard" replace/>;
@@ -41,10 +46,10 @@ function VentasRoute({children}) {
     return children;
 }
 
-// Componente para rutas de REGISTRO DE VENTAS (solo ADMIN y DESPACHADOR)
+// Componente para rutas de REGISTRO DE VENTAS (solo ADMIN, ROLE_ADMIN y DESPACHADOR)
 function RegistrarVentaRoute({children}) {
     const {auth} = useAuth();
-    const rolesPermitidos = ['ADMINISTRADOR', 'DESPACHADOR'];
+    const rolesPermitidos = ['ROLE_ADMIN', 'ADMINISTRADOR', 'DESPACHADOR'];
 
     if (!auth || !rolesPermitidos.includes(auth.rol)) {
         return <Navigate to="/dashboard" replace/>;
@@ -52,10 +57,10 @@ function RegistrarVentaRoute({children}) {
     return children;
 }
 
-// Componente para rutas de TURNOS (solo ADMIN y SUPERVISOR)
+// Componente para rutas de TURNOS (solo ADMIN, ROLE_ADMIN y SUPERVISOR)
 function TurnosRoute({children}) {
     const {auth} = useAuth();
-    const rolesPermitidos = ['ADMINISTRADOR', 'SUPERVISOR'];
+    const rolesPermitidos = ['ROLE_ADMIN', 'ADMINISTRADOR', 'SUPERVISOR'];
 
     if (!auth || !rolesPermitidos.includes(auth.rol)) {
         return <Navigate to="/dashboard" replace/>;
@@ -63,10 +68,10 @@ function TurnosRoute({children}) {
     return children;
 }
 
-// Componente para rutas de REPORTES (ADMIN, SUPERVISOR, CONTADOR)
+// Componente para rutas de REPORTES (ADMIN, ROLE_ADMIN, SUPERVISOR, CONTADOR)
 function ReportesRoute({children}) {
     const {auth} = useAuth();
-    const rolesPermitidos = ['ADMINISTRADOR', 'SUPERVISOR', 'CONTADOR'];
+    const rolesPermitidos = ['ROLE_ADMIN', 'ADMINISTRADOR', 'SUPERVISOR', 'CONTADOR'];
 
     if (!auth || !rolesPermitidos.includes(auth.rol)) {
         return <Navigate to="/dashboard" replace/>;
@@ -80,7 +85,7 @@ export default function App() {
             <Routes>
                 {/* Rutas públicas */}
                 <Route path="/login" element={<LoginPage/>}/>
-                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage/>}/>
 
                 {/* ========== RUTAS DE DASHBOARD ========== */}
                 <Route path="/dashboard" element={
@@ -104,7 +109,7 @@ export default function App() {
                 <Route path="/ventas/:id" element={
                     <ProtectedRoute>
                         <VentasRoute>
-                            <VentaDetail />
+                            <VentaDetail/>
                         </VentasRoute>
                     </ProtectedRoute>
                 }/>
@@ -113,7 +118,7 @@ export default function App() {
                 <Route path="/ventas/nueva" element={
                     <ProtectedRoute>
                         <RegistrarVentaRoute>
-                            <VentaForm />
+                            <VentaForm/>
                         </RegistrarVentaRoute>
                     </ProtectedRoute>
                 }/>
@@ -122,7 +127,7 @@ export default function App() {
                 <Route path="/ventas/:id/editar" element={
                     <ProtectedRoute>
                         <RegistrarVentaRoute>
-                            <VentaForm />
+                            <VentaForm/>
                         </RegistrarVentaRoute>
                     </ProtectedRoute>
                 }/>
@@ -166,7 +171,7 @@ export default function App() {
                 <Route path="/admin/usuarios/:id" element={
                     <ProtectedRoute>
                         <AdminRoute>
-                            <UsuarioDetail />
+                            <UsuarioDetail/>
                         </AdminRoute>
                     </ProtectedRoute>
                 }/>
@@ -175,7 +180,7 @@ export default function App() {
                 <Route path="/admin/usuarios/nuevo" element={
                     <ProtectedRoute>
                         <AdminRoute>
-                            <UsuarioForm />
+                            <UsuarioForm/>
                         </AdminRoute>
                     </ProtectedRoute>
                 }/>
@@ -184,7 +189,27 @@ export default function App() {
                 <Route path="/admin/usuarios/:id/editar" element={
                     <ProtectedRoute>
                         <AdminRoute>
-                            <UsuarioForm />
+                            <UsuarioForm/>
+                        </AdminRoute>
+                    </ProtectedRoute>
+                }/>
+
+                {/* ========== NUEVAS RUTAS PARA PERMISOS Y ROLES ========== */}
+
+                {/* Listar permisos (solo ADMIN) */}
+                <Route path="/admin/permisos" element={
+                    <ProtectedRoute>
+                        <AdminRoute>
+                            <PermisoList/>
+                        </AdminRoute>
+                    </ProtectedRoute>
+                }/>
+
+                {/* Listar roles (solo ADMIN) */}
+                <Route path="/admin/roles" element={
+                    <ProtectedRoute>
+                        <AdminRoute>
+                            <RolesList/>
                         </AdminRoute>
                     </ProtectedRoute>
                 }/>

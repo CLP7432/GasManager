@@ -38,11 +38,13 @@ export default function UsuarioForm() {
             setRoles(response.data);
         } catch (err) {
             console.error("Error cargando roles:", err);
-            // Fallback si el endpoint no responde
+            // Fallback mejorado con ROLE_ADMIN
             setRoles([
-                { idRol: 1, nombreRol: 'ADMINISTRADOR' },
-                { idRol: 2, nombreRol: 'SUPERVISOR' },
-                { idRol: 3, nombreRol: 'DESPACHADOR' }
+                { idRol: 1, nombreRol: 'ROLE_ADMIN' },
+                { idRol: 2, nombreRol: 'ADMINISTRADOR' },
+                { idRol: 3, nombreRol: 'SUPERVISOR' },
+                { idRol: 4, nombreRol: 'DESPACHADOR' },
+                { idRol: 5, nombreRol: 'CONTADOR' }
             ]);
         } finally {
             setLoadingRoles(false);
@@ -199,11 +201,11 @@ export default function UsuarioForm() {
                                         value={formData.correo}
                                         onChange={handleChange}
                                         required
-                                        disabled={loading || esEdicion}
+                                        disabled={loading}
                                     />
                                     {esEdicion && (
                                         <small className="text-muted">
-                                            El correo no se puede modificar
+                                            Cambiar el correo puede afectar el inicio de sesión
                                         </small>
                                     )}
                                 </div>

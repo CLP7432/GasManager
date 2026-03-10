@@ -5,10 +5,14 @@ export default function Dashboard() {
     const {auth, logout} = useAuth();
     const navigate = useNavigate();
 
-    // Función para determinar qué módulos puede ver según su rol
-    const canAccessVentas = ['ADMINISTRADOR', 'DESPACHADOR', 'SUPERVISOR'].includes(auth?.rol);
-    const canAccessReportes = ['ADMINISTRADOR', 'SUPERVISOR', 'CONTADOR'].includes(auth?.rol);
-    const canAccessTurnos = ['ADMINISTRADOR', 'SUPERVISOR'].includes(auth?.rol);
+    // Variables de permisos - TODAS incluyen ROLE_ADMIN
+    const canAccessVentas = ['ROLE_ADMIN', 'ADMINISTRADOR', 'DESPACHADOR', 'SUPERVISOR'].includes(auth?.rol);
+    const canRegistrarVenta = ['ROLE_ADMIN', 'ADMINISTRADOR', 'DESPACHADOR'].includes(auth?.rol);
+    const canAccessTurnos = ['ROLE_ADMIN', 'ADMINISTRADOR', 'SUPERVISOR'].includes(auth?.rol);
+    const canAccessReportes = ['ROLE_ADMIN', 'ADMINISTRADOR', 'SUPERVISOR', 'CONTADOR'].includes(auth?.rol);
+    const canAccessUsuarios = ['ROLE_ADMIN', 'ADMINISTRADOR'].includes(auth?.rol);
+    const canAccessPermisos = ['ROLE_ADMIN', 'ADMINISTRADOR'].includes(auth?.rol);
+    const canAccessRoles = ['ROLE_ADMIN', 'ADMINISTRADOR'].includes(auth?.rol);
 
     return (
         <div className="container mt-4">
@@ -53,8 +57,7 @@ export default function Dashboard() {
                                                     value={auth?.token || 'No hay token'}
                                                     onClick={(e) => e.target.select()}
                                                 />
-                                                <small className="text-muted">Copia este token para usar en
-                                                    Insomnia</small>
+                                                <small className="text-muted">Copia este token para usar en Insomnia</small>
                                             </div>
                                         </li>
                                     </ul>
@@ -67,7 +70,6 @@ export default function Dashboard() {
                                 <div className="card-body">
                                     <h5 className="card-title">Acciones Rápidas</h5>
                                     <div className="d-grid gap-2">
-                                        {/* BOTÓN PARA VER VENTAS */}
                                         {canAccessVentas && (
                                             <button
                                                 className="btn btn-primary"
@@ -76,9 +78,7 @@ export default function Dashboard() {
                                                 Ver Ventas
                                             </button>
                                         )}
-
-                                        {/* BOTÓN PARA REGISTRAR VENTA (solo despachadores y admin) */}
-                                        {['ADMINISTRADOR', 'DESPACHADOR'].includes(auth?.rol) && (
+                                        {canRegistrarVenta && (
                                             <button
                                                 className="btn btn-success"
                                                 onClick={() => navigate('/ventas/nueva')}
@@ -86,8 +86,6 @@ export default function Dashboard() {
                                                 Registrar Venta
                                             </button>
                                         )}
-
-                                        {/* BOTÓN PARA GESTIONAR TURNOS (solo supervisores y admin) */}
                                         {canAccessTurnos && (
                                             <button
                                                 className="btn btn-info"
@@ -96,8 +94,6 @@ export default function Dashboard() {
                                                 Gestionar Turnos
                                             </button>
                                         )}
-
-                                        {/* BOTÓN PARA REPORTES */}
                                         {canAccessReportes && (
                                             <button
                                                 className="btn btn-warning"
@@ -106,9 +102,7 @@ export default function Dashboard() {
                                                 Generar Reporte
                                             </button>
                                         )}
-
-                                        {/* BOTÓN PARA ADMINISTRAR USUARIOS (solo admin) */}
-                                        {auth?.rol === 'ADMINISTRADOR' && (
+                                        {canAccessUsuarios && (
                                             <button
                                                 className="btn btn-secondary"
                                                 onClick={() => navigate('/admin/usuarios')}
@@ -122,121 +116,66 @@ export default function Dashboard() {
                         </div>
                     </div>
 
-                    {/* Dashboard según rol con módulos específicos */}
-                    <div className="card mt-4">
-                        <div className="card-header">
-                            <h5 className="mb-0">Módulos Disponibles</h5>
-                        </div>
-                        <div className="card-body">
-                            {auth?.rol === 'ADMINISTRADOR' && (
+                    {/* Panel de Administrador - Se muestra si es ROLE_ADMIN o ADMINISTRADOR */}
+                    {['ROLE_ADMIN', 'ADMINISTRADOR'].includes(auth?.rol) && (
+                        <div className="card mt-4">
+                            <div className="card-header">
+                                <h5 className="mb-0">Panel de Administrador</h5>
+                            </div>
+                            <div className="card-body">
                                 <div className="alert alert-info">
-                                    <h6>Panel de Administrador</h6>
-                                    <p>Acceso completo a todos los módulos del sistema</p>
-                                    <div className="mt-2">
+                                    <h6>Acceso completo a todos los módulos</h6>
+                                    <div className="mt-2 d-flex flex-wrap gap-2">
                                         <button
-                                            className="btn btn-sm btn-outline-info me-2"
+                                            className="btn btn-sm btn-outline-info"
                                             onClick={() => navigate('/ventas')}
                                         >
-                                            <i className="bi bi-cash-stack me-1"></i> Ventas
+                                            Ventas
                                         </button>
                                         <button
-                                            className="btn btn-sm btn-outline-info me-2"
+                                            className="btn btn-sm btn-outline-info"
                                             onClick={() => navigate('/turnos')}
                                         >
-                                            <i className="bi bi-clock me-1"></i> Turnos
+                                            Turnos
                                         </button>
                                         <button
-                                            className="btn btn-sm btn-outline-info me-2"
+                                            className="btn btn-sm btn-outline-info"
                                             onClick={() => navigate('/reportes')}
                                         >
-                                            <i className="bi bi-graph-up me-1"></i> Reportes
+                                            Reportes
                                         </button>
                                         <button
                                             className="btn btn-sm btn-outline-info"
                                             onClick={() => navigate('/admin/usuarios')}
                                         >
-                                            <i className="bi bi-people me-1"></i> Usuarios
+                                            Usuarios
                                         </button>
-                                    </div>
-                                </div>
-                            )}
 
-                            {auth?.rol === 'DESPACHADOR' && (
-                                <div className="alert alert-success">
-                                    <h6>Panel de Despachador</h6>
-                                    <p>Puedes registrar ventas y consultar inventario</p>
-                                    <div className="mt-2">
-                                        <button
-                                            className="btn btn-sm btn-outline-success me-2"
-                                            onClick={() => navigate('/ventas/nueva')}
-                                        >
-                                            <i className="bi bi-plus-circle me-1"></i> Nueva Venta
-                                        </button>
-                                        <button
-                                            className="btn btn-sm btn-outline-success me-2"
-                                            onClick={() => navigate('/ventas')}
-                                        >
-                                            <i className="bi bi-list-check me-1"></i> Mis Ventas
-                                        </button>
-                                        <button
-                                            className="btn btn-sm btn-outline-success"
-                                            onClick={() => alert('Inventario - En desarrollo')}
-                                        >
-                                            <i className="bi bi-box-seam me-1"></i> Inventario
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
+                                        {/* ===== NUEVOS BOTONES PARA PERMISOS Y ROLES ===== */}
+                                        {canAccessPermisos && (
+                                            <button
+                                                className="btn btn-sm btn-outline-warning"
+                                                onClick={() => navigate('/admin/permisos')}
+                                            >
+                                                <i className="bi bi-shield-lock me-1"></i>
+                                                Permisos
+                                            </button>
+                                        )}
 
-                            {auth?.rol === 'SUPERVISOR' && (
-                                <div className="alert alert-warning">
-                                    <h6>Panel de Supervisor</h6>
-                                    <p>Supervisión de operaciones y validación de cortes</p>
-                                    <div className="mt-2">
-                                        <button
-                                            className="btn btn-sm btn-outline-warning me-2"
-                                            onClick={() => navigate('/ventas')}
-                                        >
-                                            <i className="bi bi-eye me-1"></i> Supervisar Ventas
-                                        </button>
-                                        <button
-                                            className="btn btn-sm btn-outline-warning me-2"
-                                            onClick={() => navigate('/turnos')}
-                                        >
-                                            <i className="bi bi-check-circle me-1"></i> Validar Turnos
-                                        </button>
-                                        <button
-                                            className="btn btn-sm btn-outline-warning"
-                                            onClick={() => navigate('/reportes')}
-                                        >
-                                            <i className="bi bi-file-earmark-bar-graph me-1"></i> Reportes Diarios
-                                        </button>
+                                        {canAccessRoles && (
+                                            <button
+                                                className="btn btn-sm btn-outline-success"
+                                                onClick={() => navigate('/admin/roles')}
+                                            >
+                                                <i className="bi bi-people-fill me-1"></i>
+                                                Roles
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
-                            )}
-
-                            {auth?.rol === 'CONTADOR' && (
-                                <div className="alert alert-secondary">
-                                    <h6>Panel de Contador</h6>
-                                    <p>Acceso a facturación, créditos y reportes financieros</p>
-                                    <div className="mt-2">
-                                        <button
-                                            className="btn btn-sm btn-outline-secondary me-2"
-                                            onClick={() => alert('Facturación - En desarrollo')}
-                                        >
-                                            <i className="bi bi-receipt me-1"></i> Facturación
-                                        </button>
-                                        <button
-                                            className="btn btn-sm btn-outline-secondary me-2"
-                                            onClick={() => navigate('/reportes')}
-                                        >
-                                            <i className="bi bi-calculator me-1"></i> Reportes Financieros
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
         </div>

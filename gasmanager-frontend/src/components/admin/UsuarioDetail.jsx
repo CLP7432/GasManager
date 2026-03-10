@@ -51,6 +51,11 @@ export default function UsuarioDetail() {
         }
     };
 
+    // Función para determinar si es un rol de administrador
+    const esRolAdmin = (rolNombre) => {
+        return ['ROLE_ADMIN', 'ADMINISTRADOR'].includes(rolNombre);
+    };
+
     if (loading) {
         return (
             <div className="container mt-4 text-center">
@@ -127,9 +132,9 @@ export default function UsuarioDetail() {
                                 <tr>
                                     <th>Rol:</th>
                                     <td>
-                                            <span className={`badge ${usuario.rol?.nombreRol === 'ADMINISTRADOR' ? 'bg-danger' : 'bg-primary'}`}>
-                                                {usuario.rol?.nombreRol || 'Sin rol asignado'}
-                                            </span>
+                                        <span className={`badge ${esRolAdmin(usuario.rol?.nombreRol) ? 'bg-danger' : 'bg-primary'}`}>
+                                            {usuario.rol?.nombreRol || 'Sin rol asignado'}
+                                        </span>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -143,9 +148,9 @@ export default function UsuarioDetail() {
                                 <tr>
                                     <th>Estado:</th>
                                     <td>
-                                            <span className={`badge ${usuario.estado === 'ACTIVO' ? 'bg-success' : 'bg-warning'}`}>
-                                                {usuario.estado || 'DESCONOCIDO'}
-                                            </span>
+                                        <span className={`badge ${usuario.estado === 'ACTIVO' ? 'bg-success' : 'bg-warning'}`}>
+                                            {usuario.estado || 'DESCONOCIDO'}
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>

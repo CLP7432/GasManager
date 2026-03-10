@@ -38,6 +38,11 @@ export default function UsuariosList() {
         navigate(`/admin/usuarios/${usuarioId}/editar`);
     };
 
+    // Función para determinar si es un rol de administrador
+    const esRolAdmin = (rolNombre) => {
+        return ['ROLE_ADMIN', 'ADMINISTRADOR'].includes(rolNombre);
+    };
+
     if (loading) {
         return (
             <div className="container mt-4 text-center">
@@ -102,14 +107,14 @@ export default function UsuariosList() {
                                     <td>{usuario.nombre || 'Sin nombre'}</td>
                                     <td>{usuario.correo}</td>
                                     <td>
-                                            <span className={`badge ${usuario.rol?.nombreRol === 'ADMINISTRADOR' ? 'bg-danger' : 'bg-primary'}`}>
-                                                {usuario.rol?.nombreRol || 'Sin rol'}
-                                            </span>
+                                        <span className={`badge ${esRolAdmin(usuario.rol?.nombreRol) ? 'bg-danger' : 'bg-primary'}`}>
+                                            {usuario.rol?.nombreRol || 'Sin rol'}
+                                        </span>
                                     </td>
                                     <td>
-                                            <span className={`badge ${usuario.estado === 'ACTIVO' ? 'bg-success' : 'bg-warning'}`}>
-                                                {usuario.estado || 'DESCONOCIDO'}
-                                            </span>
+                                        <span className={`badge ${usuario.estado === 'ACTIVO' ? 'bg-success' : 'bg-warning'}`}>
+                                            {usuario.estado || 'DESCONOCIDO'}
+                                        </span>
                                     </td>
                                     <td>
                                         {usuario.activo ? '✅' : '❌'}

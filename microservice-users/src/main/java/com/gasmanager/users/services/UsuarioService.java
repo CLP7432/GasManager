@@ -24,7 +24,6 @@ public class UsuarioService {
 
     // ========== MÉTODOS CRUD ==========
 
-    // 1. Crear
     public Usuario crearUsuario(Usuario usuario) {
         if (usuarioRepository.existsByCorreo(usuario.getCorreo())) {
             throw new IllegalArgumentException("El correo ya está registrado");
@@ -51,27 +50,22 @@ public class UsuarioService {
         return nuevo;
     }
 
-    // 2. Leer por ID
     public Optional<Usuario> obtenerPorId(Integer id) {
         return usuarioRepository.findById(id);
     }
 
-    // 3. Leer todos
     public List<Usuario> listarTodos() {
         return usuarioRepository.findAll();
     }
 
-    // 4. Leer activos
     public List<Usuario> listarActivos() {
         return usuarioRepository.findByActivoTrue();
     }
 
-    // 5. Leer bloqueados
     public List<Usuario> listarUsuariosBloqueados() {
         return usuarioRepository.findByBloqueadoTrue();
     }
 
-    // 6. Actualizar
     public Usuario actualizarUsuario(Integer id, Usuario usuarioActualizado) {
         Usuario usuarioExistente = usuarioRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
@@ -93,11 +87,9 @@ public class UsuarioService {
         if (usuarioActualizado.getEstado() != null) {
             usuarioExistente.setEstado(usuarioActualizado.getEstado());
 
-            // ⭐⭐ NUEVO: Si estado es ACTIVO, también activar usuario ⭐⭐
             if (usuarioActualizado.getEstado() == EstadoUsuario.ACTIVO) {
                 usuarioExistente.setActivo(true);
             }
-            // Opcional: Si estado es INACTIVO o BLOQUEADO, desactivar
             if (usuarioActualizado.getEstado() == EstadoUsuario.INACTIVO ||
                     usuarioActualizado.getEstado() == EstadoUsuario.BLOQUEADO) {
                 usuarioExistente.setActivo(false);
@@ -125,7 +117,6 @@ public class UsuarioService {
         return guardado;
     }
 
-    // 7. Eliminar (lógico)
     public boolean desactivarUsuario(Integer id) {
         Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
 
@@ -151,13 +142,19 @@ public class UsuarioService {
         return true;
     }
 
-    // ========== MÉTODOS DE AUTENTICACIÓN ==========
+    // ========== MÉTODO DE AUTENTICACIÓN CON LOGS ==========
 
     public Optional<Usuario> autenticar(String correo, String password) {
         Optional<Usuario> usuarioOpt = usuarioRepository.findByCorreo(correo);
 
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
+
+            // 🔍 LOGS DE DEPURACIÓN
+            System.out.println("🔍 [AUTH] Usuario encontrado: " + usuario.getCorreo());
+            System.out.println("🔍 [AUTH] Password en BD: " + usuario.getPassword());
+            System.out.println("🔍 [AUTH] Password ingresado: " + password);
+            System.out.println("🔍 [AUTH] ¿Coinciden? " + passwordEncoder.matches(password, usuario.getPassword()));
 
             registrarAuditoriaCompleta(
                     usuario.getIdUsuario(),
@@ -201,9 +198,9 @@ public class UsuarioService {
                 );
                 return Optional.of(usuario);
             } else {
-                // LOGIN FALLIDO
+                // LOGIN FALLIDO - CONTRASEÑA INCORRECTA
                 usuario.setIntentosFallidos(usuario.getIntentosFallidos() + 1);
-                String descripcion = "Login fallido _ Intento #" + usuario.getIntentosFallidos();
+                String descripcion = "Login fallido - Intento #" + usuario.getIntentosFallidos();
 
                 if (usuario.getIntentosFallidos() >= 3) {
                     usuario.setBloqueado(true);
@@ -230,6 +227,7 @@ public class UsuarioService {
                     );
                 }
                 usuarioRepository.save(usuario);
+                return Optional.empty(); // ✅ CORREGIDO: retorna vacío cuando la contraseña es incorrecta
             }
         } else {
             registrarAuditoriaCompleta(
@@ -241,8 +239,8 @@ public class UsuarioService {
                     null,
                     "{\"correoIntentado\":\"" + correo + "\",\"resultado\":\"NO_ENCONTRADO\"}"
             );
+            return Optional.empty();
         }
-        return Optional.empty();
     }
 
     // ========== MÉTODOS DE SEGURIDAD ==========

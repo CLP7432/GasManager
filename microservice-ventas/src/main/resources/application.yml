@@ -7,13 +7,13 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/gasmanager_ventas  # BD específica para ventas
+    url: jdbc:mysql://localhost:3306/gasmanager_ventas  # BD especï¿½fica para ventas
     username: root
-    password:  # Cambia esto
+    password:  
 
   jpa:
     hibernate:
-      ddl-auto: create  # O 'validate' en producción
+      ddl-auto: update  # O 'validate' en producciï¿½n
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
@@ -24,7 +24,7 @@ spring:
         order_updates: true
     show-sql: true
 
-  # Configuración para Feign (comunicación con otros microservicios)
+  # Configuraciï¿½n para Feign (comunicaciï¿½n con otros microservicios)
   cloud:
     openfeign:
       client:
@@ -50,7 +50,7 @@ spring:
           timeout: 5000
           writetimeout: 5000
 
-  # Logging específico para ventas
+  # Logging especï¿½fico para ventas
   logging:
     level:
       com.gasmanager.ventas: DEBUG
@@ -67,7 +67,7 @@ spring:
   cache:
     type: simple
 
-# Configuración para circuit breaker (Resilience4j)
+# Configuraciï¿½n para circuit breaker (Resilience4j)
 resilience4j:
   circuitbreaker:
     instances:
@@ -82,7 +82,7 @@ resilience4j:
         wait-duration-in-open-state: 5s
         permitted-number-of-calls-in-half-open-state: 3
 
-# Configuración de Eureka
+# Configuraciï¿½n de Eureka
 eureka:
   instance:
     hostname: localhost
@@ -111,25 +111,25 @@ management:
     mail:
       enabled: false
 
-# Configuración específica del módulo de ventas
+# Configuraciï¿½n especï¿½fica del mï¿½dulo de ventas
 ventas:
-  # Configuración de turnos
+  # Configuraciï¿½n de turnos
   turnos:
     duracion-horas: 8
     tolerancia-minutos: 15
 
-  # Configuración de cortes
+  # Configuraciï¿½n de cortes
   cortes:
     generar-automatico: true
     hora-cierre: "00:00,08:00,16:00"
     notificar-supervisor: true
 
-  # Configuración de métodos de pago
+  # Configuraciï¿½n de mï¿½todos de pago
   metodos-pago:
     permitidos: ["EFECTIVO", "TARJETA", "TRANSFERENCIA", "CREDITO"]
     credito-requiere-validacion: true
 
-  # Integración con otros microservicios
+  # Integraciï¿½n con otros microservicios
   integracion:
     inventario-service: http://msvc-inventarios  # Nombre del servicio en Eureka
     creditos-service: http://msvc-creditos
@@ -138,10 +138,10 @@ ventas:
     timeout-ms: 5000
     retry-attempts: 3
 
-# Para auditoría de ventas
+# Para auditorï¿½a de ventas
 auditoria:
   ventas:
-    retencion-dias: 365  # Guardar ventas por 1 año
+    retencion-dias: 365  # Guardar ventas por 1 aï¿½o
     registrar-ip-cliente: true
     registrar-dispositivo: true
 
