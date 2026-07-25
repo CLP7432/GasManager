@@ -1,0 +1,28 @@
+package com.gasmanager.ventas.enums;
+
+public enum TipoDetalleCorteEnum {
+    // Ventas
+    VENTA_EFECTIVO,
+    VENTA_TARJETA,
+    VENTA_TRANSFERENCIA,
+    VENTA_CREDITO,
+
+    // Gastos
+    GASTO_COMBUSTIBLE,
+    GASTO_ALIMENTACION,
+    GASTO_MATERIALES,
+    GASTO_TRANSPORTE,
+    GASTO_EXTRAORDINARIO,
+
+    // Ajustes
+    AJUSTE_INVENTARIO,
+    AJUSTE_CAJA,
+    DIFERENCIA_EFECTIVO,
+    DIFERENCIA_INVENTARIO,
+
+    // Otros
+    NOTA_CREDITO,
+    DEVOLUCION,
+    PROPINA,
+    FONDEO_INICIAL
+}

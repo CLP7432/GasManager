@@ -1,0 +1,60 @@
+server:
+  port: 8095
+
+spring:
+  application:
+    name: microservice-nomina
+
+  datasource:
+    url: jdbc:mysql://mysql8:3306/gasmanager_nomina?useSSL=false&serverTimezone=America/Mexico_City&allowPublicKeyRetrieval=true
+    username: root
+    password: 12345
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://msvc-eureka:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+
+nomina:
+  isr:
+    limite_inferior_1: 0.01
+    limite_superior_1: 895.24
+    cuota_fija_1: 0.00
+    porcentaje_1: 1.92
+    limite_inferior_2: 895.25
+    limite_superior_2: 1528.02
+    cuota_fija_2: 17.19
+    porcentaje_2: 6.40
+    limite_inferior_3: 1528.03
+    limite_superior_3: 2829.06
+    cuota_fija_3: 57.68
+    porcentaje_3: 10.88
+  deducciones:
+    seguro_social: 4.00
+    infonavit: 2.50
+    cuota_sindical: 1.00
+  salario_minimo_diario: 278.80
+  aguinaldo:
+    dias: 15
+
+logging:
+  level:
+    com.gasmanager.nomina: DEBUG

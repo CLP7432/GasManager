@@ -1,0 +1,64 @@
+server:
+  port: 8094
+
+spring:
+  application:
+    name: microservice-facturacion
+
+  datasource:
+    url: jdbc:mysql://mysql8:3306/gasmanager_facturacion?useSSL=false&serverTimezone=America/Mexico_City&allowPublicKeyRetrieval=true
+    username: root
+    password: 12345
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: facturacion@gasmanager.com
+    password: tu_contraseña
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://msvc-eureka:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+
+msvc:
+  ventas:
+    url: http://ventas:8082
+  clientes:
+    url: http://clientes:8093
+
+facturas:
+  directorio:
+    xml: /facturas/xml/
+    pdf: /facturas/pdf/
+
+logging:
+  level:
+    com.gasmanager.facturacion: DEBUG

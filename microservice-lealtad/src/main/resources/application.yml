@@ -1,0 +1,49 @@
+server:
+  port: 8100
+
+spring:
+  application:
+    name: microservice-lealtad
+
+  datasource:
+    url: jdbc:mysql://mysql8:3306/gasmanager_lealtad?useSSL=false&serverTimezone=America/Mexico_City&allowPublicKeyRetrieval=true
+    username: root
+    password: ${MYSQL_ROOT_PASSWORD:12345}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER_URL:http://msvc-eureka:8761/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+
+microservicio:
+  ventas:
+    url: http://msvc-ventas:8082
+
+logging:
+  level:
+    com.gasmanager.lealtad: DEBUG
+    org.springframework.web: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics

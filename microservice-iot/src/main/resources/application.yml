@@ -1,0 +1,23 @@
+server:
+  port: 8098
+
+spring:
+  application:
+    name: microservice-iot
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://msvc-eureka:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+
+iot:
+  api-key: "GASMANAGER-IOT-KEY-2024"
+
+logging:
+  level:
+    com.gasmanager.iot: DEBUG

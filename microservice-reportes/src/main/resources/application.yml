@@ -1,0 +1,44 @@
+server:
+  port: 8099
+
+spring:
+  application:
+    name: microservice-reportes
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://msvc-eureka:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+
+msvc:
+  ventas:
+    url: http://ventas:8082
+  inventarios:
+    url: http://inventarios:8092
+  facturacion:
+    url: http://facturacion:8094
+  clientes:
+    url: http://clientes:8093
+  nomina:
+    url: http://nomina:8095
+  users:
+    url: http://users:8081
+  compras:
+    url: http://compras:8096
+
+reportes:
+  export:
+    path: ./reportes_generados/
+    url-prefix: /api/reportes/download/
+
+cors:
+  allowed-origins: http://localhost:5173,http://localhost:5174,http://localhost:5175
+
+logging:
+  level:
+    com.gasmanager.reportes: DEBUG

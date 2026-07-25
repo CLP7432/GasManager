@@ -1,0 +1,39 @@
+server:
+  port: 8097
+
+spring:
+  application:
+    name: microservice-ia
+
+gemini:
+  api:
+    key: ${GEMINI_API_KEY:your-api-key-here}
+    url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent
+    timeout: 60000
+
+microservicio:
+  ventas:
+    url: http://msvc-ventas:8082
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://msvc-eureka:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+
+logging:
+  level:
+    com.gasmanager.ia: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
